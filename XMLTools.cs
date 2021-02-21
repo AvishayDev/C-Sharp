@@ -12,6 +12,8 @@ namespace Dal
     class XMLTools
     {
         //קריאה וכתיבה אל קובץ XML
+        //שם קובץ לדוגמא:
+        // string busesPath = @"BusXml.xml";
         static string dir = @"xml\";
         static XMLTools()
         {
