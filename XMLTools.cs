@@ -11,6 +11,7 @@ namespace Dal
 {
     class XMLTools
     {
+        //קריאה וכתיבה אל קובץ XML
         static string dir = @"xml\";
         static XMLTools()
         {
