@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WindowsProject.Classes.APiReading
+namespace APiReading
 {
     public static class ApiClient
     {
