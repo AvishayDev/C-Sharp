@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WindowsProject.Classes.APiReading
+namespace APiReading
 {
     public interface IJsonDeserializer<T>
     {
