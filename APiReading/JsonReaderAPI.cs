@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WindowsProject.Classes;
 
-namespace WindowsProject.Classes.APiReading
+namespace APiReading
 {
 
     public class JsonReaderAPi
@@ -36,34 +35,36 @@ namespace WindowsProject.Classes.APiReading
 
         public async Task<T> ReadJson<T>(string JsonQuary = "", IJsonDeserializer<T> jsonDeserialize = null)
         {
-            if (JsonQuary != "")
+           if (JsonQuary != "")
                 this.JsonQuary = JsonQuary;
             else
                 AddDefaultParameters();
 
-            if (!CanRead())
+
+            try
+            {
+                // ask for Json
+                bool success = false;
+                Task.Run(()=>{
+                    Thread.Sleep(5000);
+                    if (!success)
+                        throw new Exception();
+                });
+                string Json = await ApiClient.HttpClient.GetStringAsync(this.JsonQuary);
+                success = true;
+
+
+                //reset the json for next call
+                this.JsonQuary = "";
+
+                //return final variable
+                return jsonDeserialize == null ? JsonConvert.DeserializeObject<T>(Json) : jsonDeserialize.Deserialize(Json);
+            }
+            catch
+            {
+                Console.WriteLine("Something Went Wrong.. Please Try Again.");
                 return default;
-
-
-            // TODO: add cancel option after 10 sec
-            // TODO: try-catch for all and delete "CanRead"
-
-            // ask for Json
-            var Json = await ApiClient.HttpClient.GetStringAsync(this.JsonQuary);
-
-            //reset the json for next call
-            this.JsonQuary = "";
-
-            //return final variable
-            return jsonDeserialize == null ? JsonConvert.DeserializeObject<T>(Json) : jsonDeserialize.Deserialize(Json);
-        }
-
-        
-
-        private bool CanRead()
-        {
-            return JsonQuary.Contains("https://") || JsonQuary.Contains("http://");
-        }
-
+            }          
+            
     }
 }
