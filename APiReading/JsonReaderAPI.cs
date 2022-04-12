@@ -43,16 +43,25 @@ namespace APiReading
 
             try
             {
-                // ask for Json
+               // ask for Json
+                string Json = "";
                 bool success = false;
-                Task.Run(()=>{
-                    Thread.Sleep(5000);
-                    if (!success)
-                        throw new Exception();
-                });
-                string Json = await ApiClient.HttpClient.GetStringAsync(this.JsonQuary);
-                success = true;
 
+                await Task.Run(() =>
+                {
+                    Parallel.Invoke(() =>
+                    {
+                        // for no internet connection
+                        // or bad Json quary
+                        Thread.Sleep(5000);
+                        if (!success)
+                            throw new Exception();
+                    }, async () =>
+                    {
+                        Json = await ApiClient.HttpClient.GetStringAsync(JsonQuary);
+                        success = true;
+                    });
+                });
 
                 //reset the json for next call
                 this.JsonQuary = "";
