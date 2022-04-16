@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace APiReading
 {
 
-    public class JsonReaderAPi
+    public abstract class JsonReaderAPi
     {
 
         protected string JsonQuary = "";
@@ -20,7 +20,7 @@ namespace APiReading
             APIKey = ApiKey;
         }
 
-        protected virtual void AddDefaultParameters() { }
+        protected abstract void AddDefaultParameters();
 
 
         public virtual void AddParameter(string parameterName, object parameterValue)
@@ -33,17 +33,11 @@ namespace APiReading
             JsonQuary += Quary + "?";
         }
 
-        public async Task<T> ReadJson<T>(string JsonQuary = "", IJsonDeserializer<T> jsonDeserialize = null)
+        public static async Task<T> GetJsonRead<T>(string JsonQuary, IJsonDeserializer<T> jsonDeserializer = null)
         {
-           if (JsonQuary != "")
-                this.JsonQuary = JsonQuary;
-            else
-                AddDefaultParameters();
-
-
             try
             {
-               // ask for Json
+                // ask for Json
                 string Json = "";
                 bool success = false;
 
@@ -63,17 +57,27 @@ namespace APiReading
                     });
                 });
 
-                //reset the json for next call
-                this.JsonQuary = "";
-
+                
                 //return final variable
-                return jsonDeserialize == null ? JsonConvert.DeserializeObject<T>(Json) : jsonDeserialize.Deserialize(Json);
+                return jsonDeserializer == null ? JsonConvert.DeserializeObject<T>(Json) : jsonDeserializer.Deserialize(Json);
             }
             catch
             {
                 Console.WriteLine("Something Went Wrong.. Please Try Again.");
                 return default;
-            }          
+            }
+        }
+
+        public async Task<T> ReadJson<T>(IJsonDeserializer<T> jsonDeserializer = null)
+        {
+            AddDefaultParameters();
+
+            T returnValue = await GetJsonRead(JsonQuary, jsonDeserializer);
             
+            //reset the json for next call
+            JsonQuary = "";
+
+            return returnValue;
+        }
     }
 }
