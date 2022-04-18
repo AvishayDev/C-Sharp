@@ -25,12 +25,17 @@ namespace APiReading
 
         public virtual void AddParameter(string parameterName, object parameterValue)
         {
-            JsonQuary += $"{parameterName}={parameterValue}&";
+            if (JsonQuary != "")
+                JsonQuary += $"{parameterName}={parameterValue}&";
+            else
+                Console.WriteLine("Please Add Quary First!");
         }
 
         public virtual void AddQuary(string Quary)
         {
+            JsonQuary = "";
             JsonQuary += Quary + "?";
+            AddDefaultParameters();
         }
 
         public static async Task<T> GetJsonRead<T>(string JsonQuary, IJsonDeserializer<T> jsonDeserializer = null)
@@ -57,7 +62,7 @@ namespace APiReading
                     });
                 });
 
-                
+
                 //return final variable
                 return jsonDeserializer == null ? JsonConvert.DeserializeObject<T>(Json) : jsonDeserializer.Deserialize(Json);
             }
@@ -70,14 +75,7 @@ namespace APiReading
 
         public async Task<T> ReadJson<T>(IJsonDeserializer<T> jsonDeserializer = null)
         {
-            AddDefaultParameters();
-
-            T returnValue = await GetJsonRead(JsonQuary, jsonDeserializer);
-            
-            //reset the json for next call
-            JsonQuary = "";
-
-            return returnValue;
+            return await GetJsonRead(JsonQuary, jsonDeserializer);
         }
     }
 }
